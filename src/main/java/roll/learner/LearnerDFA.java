@@ -162,6 +162,8 @@ public abstract class LearnerDFA extends LearnerBase<DFA> {
             ceResult.breakIndex = letterNr;
             ceResult.prevState = prevState;
             ceResult.currState = currState;
+            stateToSplit = currState;
+            stateToAdd = dfa.getStateSize();
             return ceResult;
         }
 
