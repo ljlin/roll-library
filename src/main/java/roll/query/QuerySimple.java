@@ -16,8 +16,14 @@
 
 package roll.query;
 
+import jupyter.Displayer;
+import jupyter.Displayers;
 import roll.table.ObservationRow;
 import roll.words.Word;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Simple query implementation
@@ -25,7 +31,9 @@ import roll.words.Word;
  * @author Yong Li (liyong@ios.ac.cn)
  * */
 public class QuerySimple<O> implements Query<O> {
-
+	{
+		register();
+	}
 	private final Word prefix;
 	private final Word suffix;
 	private final ObservationRow row;
@@ -81,10 +89,21 @@ public class QuerySimple<O> implements Query<O> {
 	public String toString() {
 		return prefix.toStringWithAlphabet() + ":" + suffix.toStringWithAlphabet();
 	}
-	
+	public String toLaTex() {
+		return "$" + prefix.toStringWithAlphabet() + "(" + suffix.toStringWithAlphabet() + ")^\\omega" +"$";
+	}
 	@Override
 	public Query<O> clone() {
         return new QuerySimple<>(row, prefix, suffix, columnIndex);
 	}
-
+	static void register(){
+		Displayers.register(QuerySimple.class, new Displayer<QuerySimple>() {
+			@Override
+			public Map<String, String> display(QuerySimple querry) {
+				return new HashMap<String, String>() {{
+					put("text/latex",querry.toLaTex());
+				}};
+			}
+		});
+	}
 }

@@ -16,9 +16,11 @@
 
 package roll.learner.fdfa;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import roll.NativeTool;
 import roll.automata.DFA;
 import roll.automata.FDFA;
 import roll.learner.LearnerBase;
@@ -43,6 +45,7 @@ import roll.words.Word;
  * */
 
 public abstract class LearnerFDFA extends LearnerBase<FDFA> {
+
 
     protected LearnerLeading learnerLeading;
     protected List<LearnerProgress> learnerProgress;
@@ -186,7 +189,16 @@ public abstract class LearnerFDFA extends LearnerBase<FDFA> {
         }
         return builder.toString();
     }
-    
+
+    @Override
+    public String toSVG() {
+        return NativeTool.Dot2SVG(learnerLeading.toString()) +
+                learnerProgress.stream()
+                        .map(LearnerProgress::toString)
+                        .map(NativeTool::Dot2SVG)
+//                        .peek(s -> System.out.println(s))
+                        .reduce("",(u,v)-> u +" <br> "+ v);
+    }
     // -------------- some helper function
     // for FDFA learning, this function should not be visible
 //    public Word getProgressStateLabel(int stateLeading, int stateProgress) {

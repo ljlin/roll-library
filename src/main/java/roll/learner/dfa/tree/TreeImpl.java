@@ -16,11 +16,13 @@
 
 package roll.learner.dfa.tree;
 
+import roll.NativeTool;
+import roll.learner.MIMEObject;
 import roll.tree.Node;
 import roll.tree.Tree;
 import roll.tree.TreeBinaryExpoterDOT;
 
-public class TreeImpl implements Tree<ValueNode> {
+public class TreeImpl implements Tree<ValueNode>, MIMEObject {
 
 
 	private final Node<ValueNode> root;
@@ -45,6 +47,12 @@ public class TreeImpl implements Tree<ValueNode> {
 	
 	public String toString() {
 		return TreeBinaryExpoterDOT.toString(this);
+	}
+	public String toString(String title) {
+		return TreeBinaryExpoterDOT.toString(this);
+	}
+	public String toSVG() {
+		return NativeTool.Dot2SVG(this.toString());
 	}
 
 }

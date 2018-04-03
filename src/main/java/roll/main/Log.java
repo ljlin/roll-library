@@ -50,7 +50,9 @@ public class Log {
     }
     
     public void println(String content) {
-        log.println(content);
+        if(options.verbose) {
+            log.println(content);
+        }
     }
     
     public void print(String content) {

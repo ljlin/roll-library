@@ -16,9 +16,15 @@
 
 package roll.automata;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import jupyter.Displayer;
+import jupyter.Displayers;
+import roll.NativeTool;
 import roll.util.sets.ISet;
 import roll.util.sets.UtilISet;
 import roll.words.Alphabet;
@@ -28,6 +34,9 @@ import roll.words.Alphabet;
  * @author Yong Li (liyong@ios.ac.cn)
  * */
 abstract class FASimple implements FA {
+    static {
+        FASimple.register();
+    }
 
     protected final ArrayList<StateFA> states;
     protected final Alphabet alphabet;
@@ -147,5 +156,21 @@ abstract class FASimple implements FA {
         }
         return builder.toString();
     }
-
+    public String toSVG() throws IOException {
+        return NativeTool.Dot2SVG(this.toString());
+    }
+    static void register(){
+        Displayers.register(FASimple.class, new Displayer<FASimple>() {
+            @Override
+            public Map<String, String> display(FASimple automaton) {
+                return new HashMap<String, String>() {{
+                    try {
+                        put("text/html",automaton.toSVG());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }};
+            }
+        });
+    }
 }

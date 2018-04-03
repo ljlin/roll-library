@@ -16,6 +16,8 @@
 
 package roll.learner;
 
+import jupyter.Displayer;
+import jupyter.Displayers;
 import roll.main.Options;
 import roll.oracle.MembershipOracle;
 import roll.query.Query;
@@ -26,11 +28,17 @@ import roll.table.HashableValueBoolean;
 import roll.words.Alphabet;
 import roll.words.Word;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Yong Li (liyong@ios.ac.cn)
  * */
 public abstract class LearnerBase<M> implements Learner<M, HashableValue> {
-    
+    {
+        register();
+    }
     protected final Alphabet alphabet;
     protected final MembershipOracle<HashableValue> membershipOracle;
     protected final Options options;
@@ -63,4 +71,23 @@ public abstract class LearnerBase<M> implements Learner<M, HashableValue> {
         return new HashableValueBoolean(result);
     }
 
+
+    public String toSVG() {
+        return "";
+    }
+
+    static void register(){
+        Displayers.register(LearnerBase.class, new Displayer<LearnerBase>() {
+            @Override
+            public Map<String, String> display(LearnerBase leaner) {
+                return new HashMap<String, String>() {{
+//                    try {
+                        put("text/html",leaner.toSVG());
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+                }};
+            }
+        });
+    }
 }

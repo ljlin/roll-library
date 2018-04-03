@@ -29,6 +29,8 @@ import roll.table.HashableValue;
 import roll.util.Timer;
 import roll.words.Alphabet;
 
+import java.io.IOException;
+
 /**
  * @author Yong Li (liyong@ios.ac.cn)
  * 
@@ -114,4 +116,8 @@ public class LearnerNBALOmega extends LearnerBase<NBA>{
         return fdfaLearner.toString();
     }
 
+    @Override
+    public String toSVG() {
+        return fdfaLearner.toSVG();
+    }
 }

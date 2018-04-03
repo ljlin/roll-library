@@ -23,6 +23,7 @@ import gnu.trove.iterator.TIntObjectIterator;
 import roll.automata.DFA;
 import roll.automata.StateDFA;
 import roll.learner.LearnerDFA;
+import roll.learner.MIMEObject;
 import roll.main.Options;
 import roll.oracle.MembershipOracle;
 import roll.query.Query;
@@ -40,7 +41,7 @@ import roll.words.Word;
  * */
 
 // only apply to DFA
-public abstract class LearnerDFATree extends LearnerDFA {
+public abstract class LearnerDFATree extends LearnerDFA implements MIMEObject {
 
 	protected TreeImpl tree;
 	// updates for tree
@@ -347,4 +348,8 @@ public abstract class LearnerDFATree extends LearnerDFA {
 		return tree.toString();
 	}
 
+	@Override
+	public String toSVG() {
+		return tree.toSVG();
+	}
 }
