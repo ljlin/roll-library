@@ -29,8 +29,6 @@ import roll.table.HashableValue;
 import roll.util.Timer;
 import roll.words.Alphabet;
 
-import java.io.IOException;
-
 /**
  * @author Yong Li (liyong@ios.ac.cn)
  * 

@@ -16,6 +16,7 @@
 
 package roll.learner;
 
+import com.google.common.collect.ImmutableList;
 import roll.automata.DFA;
 import roll.main.Options;
 import roll.oracle.MembershipOracle;
@@ -61,6 +62,7 @@ public abstract class LearnerDFA extends LearnerBase<DFA> {
 
     @Override
     public DFA getHypothesis() {
+        dfa.colored = ImmutableList.of(stateToSplit,stateToAdd);
         return dfa;
     }
     
@@ -164,6 +166,7 @@ public abstract class LearnerDFA extends LearnerBase<DFA> {
             ceResult.currState = currState;
             stateToSplit = currState;
             stateToAdd = dfa.getStateSize();
+
             return ceResult;
         }
 

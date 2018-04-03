@@ -17,8 +17,13 @@
 package roll.automata;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import com.google.common.collect.ImmutableList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntObjectProcedure;
@@ -115,7 +120,42 @@ public class StateNFA extends StateFA {
         successors.forEachEntry(procedure);
         return builder.toString();
     }
-    
+
+    @Override
+    public String toDot(List<String> apList, String fillcolor) {
+        final List<String> list =
+                Optional.ofNullable(apList).orElse(
+                        IntStream.range(0,nfa.getAlphabetSize())
+                                .mapToObj(Integer::toString)
+                                .collect(ImmutableList.<String>toImmutableList())
+                );
+
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("  " + getId() + " [label=\"" + getId() + "\"");
+        if(nfa.isFinal(getId())) builder.append(", shape = doublecircle");
+        else builder.append(", shape = circle");
+        if (fillcolor !=null){
+            builder.append("," +
+                    "style=\"filled\", \n" +
+                    "fillcolor=\""+fillcolor+"\", ");
+        }
+        builder.append("];\n");
+        // transitions
+        TIntObjectProcedure<ISet> procedure = new TIntObjectProcedure<ISet> () {
+            @Override
+            public boolean execute(int letter, ISet succs) {
+                for(int succ : succs) {
+                    builder.append("  " + getId() + " -> " + succ
+                            + " [label=\"" + list.get(letter) + "\"];\n");
+                }
+                return true;
+            }
+        };
+        successors.forEachEntry(procedure);
+        return builder.toString();
+    }
+
     @Override
     public String toBA() {
         StringBuilder builder = new StringBuilder();

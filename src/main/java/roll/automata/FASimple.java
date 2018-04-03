@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableBiMap;
 import jupyter.Displayer;
 import jupyter.Displayers;
 import roll.NativeTool;
@@ -43,7 +44,9 @@ abstract class FASimple implements FA {
     protected int initialState;
     protected final ISet finalStates;
     protected Acc acceptance;
-    
+    public List<Integer> colored;
+    public String title;
+
     public FASimple(final Alphabet alphabet) {
         this.alphabet = alphabet;
         this.states = new ArrayList<>();
@@ -125,26 +128,47 @@ abstract class FASimple implements FA {
         int startNode = this.getStateSize();
         for (int node = 0; node < this.getStateSize(); node++) {
             builder.append(this.getState(node).toString());
-        }   
+        }
         builder.append("  " + startNode + " [label=\"\", shape = plaintext];\n");
         builder.append("  " + startNode + " -> " + this.getInitialState() + " [label=\"\"];\n");
         builder.append("}\n");
         return builder.toString();
     }
-    
+
+
     public String toString(List<String> apList) {
         StringBuilder builder = new StringBuilder();
         builder.append("digraph {\n");
         int startNode = this.getStateSize();
         for (int node = 0; node < this.getStateSize(); node++) {
             builder.append(this.getState(node).toString(apList));
-        }   
+        }
         builder.append("  " + startNode + " [label=\"\", shape = plaintext];\n");
         builder.append("  " + startNode + " -> " + this.getInitialState() + " [label=\"\"];\n");
         builder.append("}\n");
         return builder.toString();
     }
-    
+    public String toDot() {
+        ImmutableBiMap<Integer,String> stateColor = ImmutableBiMap.of(0,"orangered",1,"skyblue");
+//        assert colored == null | colored.size() <= 2;
+        StringBuilder builder = new StringBuilder();
+        builder.append("digraph {\n");
+        if (title != null){
+            builder.append("  label=\"" + title + "\";\n");
+        }
+        int startNode = this.getStateSize();
+        for (int node = 0; node < this.getStateSize(); node++) {
+            String fillColor = colored == null ?
+                    null :
+                    stateColor.get(colored.indexOf(node));
+            builder.append(this.getState(node).toDot(null,fillColor));
+        }
+        builder.append("  " + startNode + " [label=\"\", shape = plaintext];\n");
+        builder.append("  " + startNode + " -> " + this.getInitialState() + " [label=\"\"];\n");
+        builder.append("}\n");
+        return builder.toString();
+    }
+
     public String toBA() {
         StringBuilder builder = new StringBuilder();
         builder.append("[" + getInitialState() + "]\n");
@@ -157,7 +181,7 @@ abstract class FASimple implements FA {
         return builder.toString();
     }
     public String toSVG() throws IOException {
-        return NativeTool.Dot2SVG(this.toString());
+        return NativeTool.Dot2SVG(this.toDot());
     }
     static void register(){
         Displayers.register(FASimple.class, new Displayer<FASimple>() {

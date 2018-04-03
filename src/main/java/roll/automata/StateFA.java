@@ -45,7 +45,8 @@ public abstract class StateFA implements State {
     }
     
     public abstract String toString(List<String> apList);
-    
+    public abstract String toDot(List<String> apList,String fillcolor);
+
     //
     public abstract String toBA();
 

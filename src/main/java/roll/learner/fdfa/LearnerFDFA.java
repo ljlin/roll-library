@@ -16,7 +16,6 @@
 
 package roll.learner.fdfa;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

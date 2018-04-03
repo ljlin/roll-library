@@ -16,9 +16,13 @@
 
 package roll.automata;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 /**
  * @author Yong Li (liyong@ios.ac.cn)
@@ -65,19 +69,44 @@ public class StateDFA extends StateFA {
     
     @Override
     public String toString(List<String> apList) {
+        return toDot(apList,null);
+//        StringBuilder builder = new StringBuilder();
+//        builder.append("  " + getId() + " [label=\"" + getId() + "\"");
+//        if(dfa.isFinal(getId())) builder.append(", shape = doublecircle");
+//        else builder.append(", shape = circle");
+//        builder.append("];\n");
+//        // transitions
+//        for(int i = 0; i < successors.length; i ++) {
+//            builder.append("  " + getId() + " -> " + successors[i]
+//                    + " [label=\"" + apList.get(i) + "\"];\n");
+//        }
+//        return builder.toString();
+    }
+    public String toDot(List<String> apList,String fillcolor){
+        final List<String> list =
+                Optional.ofNullable(apList).orElse(
+                        IntStream.range(0,dfa.getAlphabetSize())
+                                .mapToObj(Integer::toString)
+                                .collect(ImmutableList.<String>toImmutableList())
+                );
         StringBuilder builder = new StringBuilder();
         builder.append("  " + getId() + " [label=\"" + getId() + "\"");
         if(dfa.isFinal(getId())) builder.append(", shape = doublecircle");
         else builder.append(", shape = circle");
+        if (fillcolor !=null){
+            builder.append("," +
+                    "style=\"filled\", \n" +
+                    "fillcolor=\""+fillcolor+"\", ");
+        }
         builder.append("];\n");
+
         // transitions
         for(int i = 0; i < successors.length; i ++) {
             builder.append("  " + getId() + " -> " + successors[i]
-                    + " [label=\"" + apList.get(i) + "\"];\n");
+                    + " [label=\"" + list.get(i) + "\"];\n");
         }
         return builder.toString();
     }
-    
     @Override
     public String toBA() {
         StringBuilder builder = new StringBuilder();
