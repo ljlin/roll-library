@@ -199,12 +199,8 @@ public class notebookTest {
     @Test
     public void CETEST() throws Exception {
         NBA nba = nbaExample();
-        Function<QuerySimple,Boolean> memberAnswer = new Function<QuerySimple,Boolean>() {
-            @Override
-            public Boolean apply(QuerySimple querySimple) {
-                return querySimple.getSuffix() != Alphabet.....empty();
-            }
-        }
+        Function<QuerySimple,Boolean> memberAnswer = (querySimple -> {return false;});
+
         System.out.println(CE.withAlphabet(nba.getAlphabet()).finite("aaaa").toLaTex());
     }
 }
