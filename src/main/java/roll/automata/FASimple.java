@@ -25,6 +25,7 @@ import java.util.Map;
 import com.google.common.collect.ImmutableBiMap;
 import jupyter.Displayer;
 import jupyter.Displayers;
+import jupyter.MIMETypes;
 import roll.NativeTool;
 import roll.util.sets.ISet;
 import roll.util.sets.UtilISet;
@@ -46,6 +47,7 @@ abstract class FASimple implements FA {
     protected Acc acceptance;
     public List<Integer> colored;
     public String title;
+    public Object previous;
 
     public FASimple(final Alphabet alphabet) {
         this.alphabet = alphabet;
@@ -189,7 +191,24 @@ abstract class FASimple implements FA {
             public Map<String, String> display(FASimple automaton) {
                 return new HashMap<String, String>() {{
                     try {
-                        put("text/html",automaton.toSVG());
+                        if (automaton.previous == null && automaton instanceof FASimple){
+                            put(MIMETypes.HTML,automaton.toSVG());
+                        }
+                        else {
+                            FASimple previous = (FASimple) automaton.previous;
+                            String HTML =
+                                    "<table border=\"1\" cellspacing=\"0\" bordercolor=\"#000000\"  style=\"border-collapse:collapse;\">\n" +
+                                    "  <tr>\n" +
+                                    "    <th> Previous Hypothesis</th>\n" +
+                                    "    <th> Current Hypothesis </th>\n" +
+                                    "  </tr>\n" +
+                                    "  <tr>\n" +
+                                    "    <td>%s</td>\n" +
+                                    "    <td>%s</td>\n" +
+                                    "  </tr>\n" +
+                                    "</table>";
+                            put(MIMETypes.HTML,String.format(HTML,previous.toSVG(),automaton.toSVG()));
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

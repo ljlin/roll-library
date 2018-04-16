@@ -90,7 +90,13 @@ public class QuerySimple<O> implements Query<O> {
 		return prefix.toStringWithAlphabet() + ":" + suffix.toStringWithAlphabet();
 	}
 	public String toLaTex() {
-		return "$" + prefix.toStringWithAlphabet() + "(" + suffix.toStringWithAlphabet() + ")^\\omega" +"$";
+		return "$"
+				+ prefix.toStringWithAlphabet()
+				+ ( suffix.isEmpty() ?
+						"" :
+						"(" + suffix.toStringWithAlphabet() + ")^\\omega"
+				)
+				+ "$";
 	}
 	@Override
 	public Query<O> clone() {

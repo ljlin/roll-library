@@ -18,6 +18,7 @@ package roll.learner;
 
 import jupyter.Displayer;
 import jupyter.Displayers;
+import jupyter.MIMETypes;
 import roll.main.Options;
 import roll.oracle.MembershipOracle;
 import roll.query.Query;
@@ -53,7 +54,7 @@ public abstract class LearnerBase<M> implements Learner<M, HashableValue> {
     
     protected int stateToSplit;   // state we are going to split
     protected int stateToAdd;     // new state 
-    
+    public M oldHyp;
     @Override
     public Options getOptions() {
         return options;
@@ -84,11 +85,10 @@ public abstract class LearnerBase<M> implements Learner<M, HashableValue> {
             @Override
             public Map<String, String> display(LearnerBase leaner) {
                 return new HashMap<String, String>() {{
-//                    try {
-                        put("text/html",leaner.toSVG());
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
+                        if (leaner.options.structure == Options.Structure.TREE)
+                            put(MIMETypes.HTML,leaner.toSVG());
+                        else
+                            put(MIMETypes.TEXT,leaner.toString());
                 }};
             }
         });

@@ -14,12 +14,17 @@ import roll.oracle.nba.rabit.TeacherNBARABIT;
 import roll.parser.Format;
 import roll.parser.Parser;
 import roll.parser.UtilParser;
+import roll.query.CE;
 import roll.query.Query;
+import roll.query.QuerySimple;
 import roll.table.HashableValue;
 import roll.words.Alphabet;
+import roll.words.Word;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class notebookTest {
 
@@ -181,11 +186,25 @@ public class notebookTest {
 //        System.out.println(cnt);
 
         ImmutableList celist = LearningSequence.ceList(dfa,options);
+        ArrayList a = new ArrayList<>(celist);
+        a.size();
         System.out.println(celist);
 //        ImmutableList ce2 = ImmutableList.builder().addAll(celist.subList(0,1)).build();
         LearnerBase<DFA> learner = LearningSequence.refinedLearner(dfa,options,celist.subList(0,1));
 //        System.out.println(learner.getHypothesis().toDot());
 //        learner.getLearnerFDFA().getHypothesis();
 //        System.out.println(learner.toSVG());
+    }
+
+    @Test
+    public void CETEST() throws Exception {
+        NBA nba = nbaExample();
+        Function<QuerySimple,Boolean> memberAnswer = new Function<QuerySimple,Boolean>() {
+            @Override
+            public Boolean apply(QuerySimple querySimple) {
+                return querySimple.getSuffix() != Alphabet.....empty();
+            }
+        }
+        System.out.println(CE.withAlphabet(nba.getAlphabet()).finite("aaaa").toLaTex());
     }
 }

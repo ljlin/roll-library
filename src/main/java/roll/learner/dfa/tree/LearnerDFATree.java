@@ -19,6 +19,7 @@ package roll.learner.dfa.tree;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import gnu.trove.iterator.TIntObjectIterator;
 import roll.automata.DFA;
 import roll.automata.StateDFA;
@@ -88,7 +89,12 @@ public abstract class LearnerDFATree extends LearnerDFA implements MIMEObject {
 		if (nodeToSplit != null) {
 			updatePredecessors();
 		}
-		
+		oldHyp = dfa;
+		if (oldHyp != null){
+			oldHyp.colored = ImmutableList.of(stateToSplit);
+		}
+
+
 		DFA dfa = new DFA(alphabet);
 		for(int i = 0; i < states.size(); i ++) {
 		    dfa.createState();
@@ -111,6 +117,8 @@ public abstract class LearnerDFATree extends LearnerDFA implements MIMEObject {
 			}
 		}
 		this.dfa = dfa;
+		this.dfa.previous = oldHyp;
+
 	}
 	
 	protected boolean isAccepting(ValueNode state) {

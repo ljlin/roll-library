@@ -19,6 +19,7 @@ package roll.learner.dfa.table;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import roll.automata.DFA;
 import roll.automata.StateDFA;
 import roll.learner.LearnerDFA;
@@ -147,7 +148,10 @@ public abstract class LearnerDFATable extends LearnerDFA {
     
     // Default learner for DFA
     protected void constructHypothesis() {
-        
+        oldHyp = dfa;
+        if (oldHyp != null) {
+            oldHyp.colored = ImmutableList.of(stateToSplit);
+        }
         dfa = new DFA(alphabet);
         
         List<ObservationRow> upperTable = observationTable.getUpperTable();
@@ -171,7 +175,7 @@ public abstract class LearnerDFATable extends LearnerDFA {
                 dfa.setFinal(rowNr);
             }
         }
-        
+        dfa.previous = oldHyp;
     }
     
     // a state is accepting iff it accepts empty language

@@ -19,6 +19,7 @@ package roll.learner.fdfa;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Streams;
 import roll.NativeTool;
 import roll.automata.DFA;
 import roll.automata.FDFA;
@@ -181,7 +182,7 @@ public abstract class LearnerFDFA extends LearnerBase<FDFA> {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("T: \n" + learnerLeading.toString() + "\n");
-        
+
         for(LearnerProgress learner : learnerProgress) {
             builder.append(learner.getLeadingLabel().toStringWithAlphabet() + ": \n");
             builder.append(learner.toString());
@@ -191,12 +192,27 @@ public abstract class LearnerFDFA extends LearnerBase<FDFA> {
 
     @Override
     public String toSVG() {
-        return NativeTool.Dot2SVG(learnerLeading.toString()) +
-                learnerProgress.stream()
-                        .map(LearnerProgress::toString)
-                        .map(NativeTool::Dot2SVG)
-//                        .peek(s -> System.out.println(s))
-                        .reduce("",(u,v)-> u +" <br> "+ v);
+        if (options.structure == Options.Structure.TREE)
+            return "<p> Leading Learner :  </p> <br> "
+                    +
+                    NativeTool.Dot2SVG(learnerLeading.toString())
+                    +
+                    Streams.zip(
+                            learnerProgress.stream()
+                                    .map(LearnerProgress::getLeadingLabel)
+                                    .map(Word::toStringWithAlphabet),
+                            learnerProgress.stream()
+                                    .map(LearnerProgress::toString)
+                                    .map(NativeTool::Dot2SVG),
+                            (title,dot) -> " <p> Progress Learner for " + title + " : <br> "+ dot + "<br>"
+                    ).reduce("",String::concat);
+//                    learnerProgress.stream()
+//                            .map(LearnerProgress::toString)
+//                            .map(NativeTool::Dot2SVG)
+////                          .peek(s -> System.out.println(s))
+//                            .reduce("",(u,v)-> u +" <p> Progress Learner for xxx : <br> "+ v + "<br>");
+        else
+            return "";
     }
     // -------------- some helper function
     // for FDFA learning, this function should not be visible
