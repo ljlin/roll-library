@@ -1,9 +1,13 @@
 package roll.main;
 
 import com.google.common.collect.ImmutableList;
+import jupyter.Displayer;
+import jupyter.Displayers;
+import jupyter.MIMETypes;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import roll.automata.DFA;
+import roll.automata.FASimple;
 import roll.automata.NBA;
 import roll.learner.LearnerBase;
 import roll.learner.LearnerDFA;
@@ -16,14 +20,46 @@ import roll.learner.nba.lomega.LearnerNBALOmega;
 import roll.oracle.dfa.dk.TeacherDFADK;
 import roll.oracle.nba.rabit.TeacherNBARABIT;
 import roll.query.Query;
+import roll.query.QuerySimple;
 import roll.table.HashableValue;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 public class LearningSequence {
+    {
+        register();
+    }
 
+    static void register(){
+        Displayers.register(ImmutableList.class, new Displayer<ImmutableList>() {
+            @Override
+            public Map<String, String> display(ImmutableList list) {
+                System.out.println(list.get(0).getClass());
+                return new HashMap<String, String>() {{
+                    if (list == null){
+                        put(MIMETypes.TEXT,"null");
+                    }
+                    else if (list.size() == 0) {
+                        put(MIMETypes.TEXT,"[]");
+                    }
+                    else if (list.get(0) instanceof QuerySimple) {
+                        ImmutableList<QuerySimple> qlist = (ImmutableList<QuerySimple>) list;
+                        String latex = qlist.subList(1,qlist.size()).stream()
+                                .map(QuerySimple::toLaTex)
+                                .reduce(
+                                        "[" + qlist.get(0).toLaTex(),
+                                        (res,s) -> res + "," + s);
+                        put(MIMETypes.HTML,"$" + latex + "]$" );
+
+                    }
+                    else {
+                        put(MIMETypes.TEXT,list.toString());
+                    }
+                }};
+            }
+        });
+    }
     static public Iterator<Triple<Integer, LearnerBase<DFA>, Optional<Query<HashableValue>>>> create(DFA target, Options options) {
         return new Iterator<Triple<Integer, LearnerBase<DFA>, Optional<Query<HashableValue>>>>() {
             TeacherDFADK teacher = new TeacherDFADK(options, target);

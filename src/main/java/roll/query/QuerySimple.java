@@ -90,13 +90,12 @@ public class QuerySimple<O> implements Query<O> {
 		return prefix.toStringWithAlphabet() + ":" + suffix.toStringWithAlphabet();
 	}
 	public String toLaTex() {
-		return "$"
-				+ prefix.toStringWithAlphabet()
+		return  prefix.toStringWithAlphabet()
 				+ ( suffix.isEmpty() ?
 						"" :
 						"(" + suffix.toStringWithAlphabet() + ")^\\omega"
 				)
-				+ "$";
+				;
 	}
 	@Override
 	public Query<O> clone() {
@@ -107,7 +106,7 @@ public class QuerySimple<O> implements Query<O> {
 			@Override
 			public Map<String, String> display(QuerySimple querry) {
 				return new HashMap<String, String>() {{
-					put("text/latex",querry.toLaTex());
+					put("text/latex","$" + querry.toLaTex() + "$");
 				}};
 			}
 		});

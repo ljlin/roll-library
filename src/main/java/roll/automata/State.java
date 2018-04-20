@@ -25,5 +25,7 @@ public interface State {
     int getId();
     // setters
     void addTransition(int letter, int state);
-
+    default void addTransition(int letter, State state){
+        this.addTransition(letter,state.getId());
+    }
 }

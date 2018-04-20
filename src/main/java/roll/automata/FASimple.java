@@ -72,7 +72,7 @@ public abstract class FASimple implements FA {
         states.add(state);
         return state;
     }
-    
+
     public void setInitial(int state) {
         initialState = state;
     }
@@ -98,7 +98,11 @@ public abstract class FASimple implements FA {
         assert checkValidState(state);
         finalStates.set(state);
     }
-    
+
+    public void setFinal(State state) {
+        this.setFinal(state.getId());
+    }
+
     public ISet getFinalStates() {
         return finalStates.clone();
     }
