@@ -163,11 +163,16 @@ public abstract class FASimple implements FA {
             builder.append("  label=\"" + title + "\";\n");
         }
         int startNode = this.getStateSize();
+        //
+        List<String> apList = new ArrayList<>();
+        for(int i = 0; i < alphabet.getLetterSize(); i ++) {
+            apList.add(alphabet.getLetter(i) + "");
+        }
         for (int node = 0; node < this.getStateSize(); node++) {
             String fillColor = colored == null ?
                     null :
                     stateColor.get(colored.indexOf(node));
-            builder.append(this.getState(node).toDot(null,fillColor));
+            builder.append(this.getState(node).toDot(apList,fillColor));
         }
         builder.append("  " + startNode + " [label=\"\", shape = plaintext];\n");
         builder.append("  " + startNode + " -> " + this.getInitialState() + " [label=\"\"];\n");
