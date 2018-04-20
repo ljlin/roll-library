@@ -6,10 +6,10 @@ import org.junit.Test;
 import roll.automata.DFA;
 import roll.automata.NBA;
 import roll.learner.LearnerBase;
-import roll.learner.LearnerDFA;
 import roll.learner.nba.lomega.LearnerNBALOmega;
 import roll.main.LearningSequence;
 import roll.main.Options;
+import roll.main.SemiLearning;
 import roll.oracle.nba.rabit.TeacherNBARABIT;
 import roll.parser.Format;
 import roll.parser.Parser;
@@ -19,11 +19,11 @@ import roll.query.Query;
 import roll.query.QuerySimple;
 import roll.table.HashableValue;
 import roll.words.Alphabet;
-import roll.words.Word;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class notebookTest {
@@ -141,7 +141,7 @@ public class notebookTest {
 //        NBA nba = parser.parse();
         NBA nba = nbaExample();
 
-        Iterator<Triple<Integer,LearnerBase<NBA>,Optional<Query<HashableValue>>>> H =  LearningSequence.creat(nba,options);
+        Iterator<Triple<Integer,LearnerBase<NBA>,Optional<Query<HashableValue>>>> H =  LearningSequence.create(nba,options);
 
 //        int cnt = 0;
 //        while (H.hasNext()){
@@ -173,7 +173,7 @@ public class notebookTest {
 //        NBA nba = parser.parse();
         DFA dfa = dfaExample();
 
-//        Iterator<Triple<Integer,LearnerBase<DFA>,Optional<Query<HashableValue>>>> H =  LearningSequence.creat(dfa,options);
+//        Iterator<Triple<Integer,LearnerBase<DFA>,Optional<Query<HashableValue>>>> H =  LearningSequence.create(dfa,options);
 
 //        int cnt = 0;
 //        while (H.hasNext()){
@@ -199,8 +199,91 @@ public class notebookTest {
     @Test
     public void CETEST() throws Exception {
         NBA nba = nbaExample();
-        Function<QuerySimple,Boolean> memberAnswer = (querySimple -> {return false;});
+        Function<Query<HashableValue>,Boolean> memberAnswer = (querySimple -> {return false;});
+
 
         System.out.println(CE.withAlphabet(nba.getAlphabet()).finite("aaaa").toLaTex());
+    }
+    @Test
+    public void SemiTest() throws Exception {
+        Alphabet alphabet = new Alphabet();
+        Character a = 'a';
+        Character b = 'b';
+
+        alphabet.addLetter(a);
+        alphabet.addLetter(b);
+
+        Options options = new Options();
+        options.approximation = Options.Approximation.UNDER;
+        options.algorithm = Options.Algorithm.SYNTACTIC;
+        options.structure = Options.Structure.TREE;
+
+        // a U G b
+        BiFunction<String,String,Boolean> memberAnswer = (leading, period) -> {
+            boolean visb = false;
+            for (int i = 0; i < leading.length(); i++) {
+                if (leading.charAt(i) == 'a' && visb) {
+                    return false;
+                } else if (leading.charAt(i) == 'b') {
+                    visb = true;
+                }
+            }
+            for (int i = 0; i < period.length(); i++) {
+                if (period.charAt(i) != 'b'){
+                    return false;
+                }
+            }
+            return true;
+        };
+        SemiLearning p = new SemiLearning(alphabet,options,memberAnswer);
+        System.out.println(p.getHypothesis().toString());
+
+        QuerySimple<HashableValue> ce = CE.withAlphabet(alphabet).omega("a","b");
+        ce.answerQuery(null);
+        p.refineHypothesis(ce);
+
+        System.out.println(p.getHypothesis().toString());
+//
+//        ce = CE.withAlphabet(alphabet).omega("b","b");
+//        ce.answerQuery(null);
+//        p.refineHypothesis(ce);
+//
+//        System.out.println(p.getHypothesis().toString());
+
+
+    }
+    @Test
+    public void semiDFATest() throws Exception {
+        Alphabet alphabet = new Alphabet();
+        Character a = 'a';
+        Character b = 'b';
+
+        alphabet.addLetter(a);
+        alphabet.addLetter(b);
+
+        Options options = new Options();
+        options.algorithm = Options.Algorithm.DFA_COLUMN;
+        options.structure = Options.Structure.TABLE;
+
+        // a*b+
+        Function<String,Boolean> memberAnswer = (w) -> {
+//            boolean visb = false;
+//            for (int i = 0; i < w.length(); i++) {
+//                if (w.charAt(i) == 'a' && visb) {
+//                    return false;
+//                } else if (w.charAt(i) == 'b') {
+//                    visb = true;
+//                }
+//            }
+//            return visb;
+            long cntA = w.chars().filter(x -> x == 'a').count();
+            long cntB = w.chars().filter(x -> x == 'a').count();
+            return (cntA % 2 == 1) && (cntB % 2 == 1) && (cntA + cntB == w.length());
+
+
+        };
+        SemiLearning l = new SemiLearning(alphabet,options,memberAnswer);
+        l.getHypothesis();
+        l.refineHypothesis(CE.withAlphabet(alphabet).finite("bab"));
     }
 }

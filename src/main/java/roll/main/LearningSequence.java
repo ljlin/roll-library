@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import roll.automata.DFA;
 import roll.automata.NBA;
-import roll.learner.Learner;
 import roll.learner.LearnerBase;
 import roll.learner.LearnerDFA;
 import roll.learner.LearnerType;
@@ -25,7 +24,7 @@ import java.util.Optional;
 
 public class LearningSequence {
 
-    static public Iterator<Triple<Integer, LearnerBase<DFA>, Optional<Query<HashableValue>>>> creat(DFA target, Options options) {
+    static public Iterator<Triple<Integer, LearnerBase<DFA>, Optional<Query<HashableValue>>>> create(DFA target, Options options) {
         return new Iterator<Triple<Integer, LearnerBase<DFA>, Optional<Query<HashableValue>>>>() {
             TeacherDFADK teacher = new TeacherDFADK(options, target);
             LearnerDFA learner;
@@ -100,7 +99,7 @@ public class LearningSequence {
     }
     static public Iterator<Query<HashableValue>> ceSequence(DFA target, Options options) {
         return new Iterator<Query<HashableValue>>() {
-            Iterator<Triple<Integer, LearnerBase<DFA>, Optional<Query<HashableValue>>>> delegate = creat(target, options);
+            Iterator<Triple<Integer, LearnerBase<DFA>, Optional<Query<HashableValue>>>> delegate = create(target, options);
 
             {
                 if (delegate.hasNext()) {
@@ -166,7 +165,7 @@ public class LearningSequence {
         LearningSequence.refineLearner(learner,ceList);
         return learner;
     }
-    static public Iterator<Triple<Integer, LearnerBase<NBA>, Optional<Query<HashableValue>>>> creat(NBA target, Options options) {
+    static public Iterator<Triple<Integer, LearnerBase<NBA>, Optional<Query<HashableValue>>>> create(NBA target, Options options) {
         return new Iterator<Triple<Integer, LearnerBase<NBA>, Optional<Query<HashableValue>>>>() {
             TeacherNBARABIT teacher = new TeacherNBARABIT(options, target);
             LearnerNBALOmega learner;
@@ -210,7 +209,7 @@ public class LearningSequence {
 
     static public Iterator<Query<HashableValue>> ceSequence(NBA target, Options options) {
         return new Iterator<Query<HashableValue>>() {
-            Iterator<Triple<Integer, LearnerBase<NBA>, Optional<Query<HashableValue>>>> delegate = creat(target, options);
+            Iterator<Triple<Integer, LearnerBase<NBA>, Optional<Query<HashableValue>>>> delegate = create(target, options);
 
             {
                 if (delegate.hasNext()) {
