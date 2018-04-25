@@ -148,10 +148,10 @@ public abstract class LearnerDFATable extends LearnerDFA {
     
     // Default learner for DFA
     protected void constructHypothesis() {
-        oldHyp = dfa;
-        if (oldHyp != null) {
-            oldHyp.colored = ImmutableList.of(stateToSplit);
-        }
+//        oldHyp = dfa;
+//        if (oldHyp != null) {
+//            oldHyp.colored = ImmutableList.of(stateToSplit);
+//        }
         dfa = new DFA(alphabet);
         
         List<ObservationRow> upperTable = observationTable.getUpperTable();
@@ -175,7 +175,7 @@ public abstract class LearnerDFATable extends LearnerDFA {
                 dfa.setFinal(rowNr);
             }
         }
-        dfa.previous = oldHyp;
+//        dfa.previous = oldHyp;
     }
     
     // a state is accepting iff it accepts empty language

@@ -89,10 +89,10 @@ public abstract class LearnerDFATree extends LearnerDFA implements MIMEObject {
 		if (nodeToSplit != null) {
 			updatePredecessors();
 		}
-		oldHyp = dfa;
-		if (oldHyp != null){
-			oldHyp.colored = ImmutableList.of(stateToSplit);
-		}
+//		oldHyp = dfa;
+//		if (oldHyp != null){
+//			oldHyp.colored = ImmutableList.of(stateToSplit);
+//		}
 
 
 		DFA dfa = new DFA(alphabet);
@@ -117,7 +117,7 @@ public abstract class LearnerDFATree extends LearnerDFA implements MIMEObject {
 			}
 		}
 		this.dfa = dfa;
-		this.dfa.previous = oldHyp;
+//		this.dfa.previous = oldHyp;
 
 	}
 	

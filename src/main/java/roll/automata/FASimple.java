@@ -17,10 +17,8 @@
 package roll.automata;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableBiMap;
 import jupyter.Displayer;
@@ -45,9 +43,11 @@ public abstract class FASimple implements FA {
     protected int initialState;
     protected final ISet finalStates;
     protected Acc acceptance;
-    public List<Integer> colored;
+//    public List<Integer> colored;
+    public int stateToSplit = -1;
+    public int stateToAdd   = -1;
     public String title;
-    public Object previous;
+//    public Object previous;
 
     public FASimple(final Alphabet alphabet) {
         this.alphabet = alphabet;
@@ -156,7 +156,7 @@ public abstract class FASimple implements FA {
     }
     public String toDot() {
         ImmutableBiMap<Integer,String> stateColor = ImmutableBiMap.of(0,"orangered",1,"skyblue");
-//        assert colored == null | colored.size() <= 2;
+
         StringBuilder builder = new StringBuilder();
         builder.append("digraph {\n");
         if (title != null){
@@ -169,9 +169,12 @@ public abstract class FASimple implements FA {
             apList.add(alphabet.getLetter(i) + "");
         }
         for (int node = 0; node < this.getStateSize(); node++) {
-            String fillColor = colored == null ?
-                    null :
-                    stateColor.get(colored.indexOf(node));
+            String fillColor = (
+
+                    node == stateToSplit ? stateColor.get(0) :
+                    node >= stateToAdd && stateToAdd > 0   ? stateColor.get(1) :
+                    null
+            );
             builder.append(this.getState(node).toDot(apList,fillColor));
         }
         builder.append("  " + startNode + " [label=\"\", shape = plaintext];\n");
@@ -200,24 +203,24 @@ public abstract class FASimple implements FA {
             public Map<String, String> display(FASimple automaton) {
                 return new HashMap<String, String>() {{
                     try {
-                        if (automaton.previous == null && automaton instanceof FASimple){
+//                        if (automaton.previous == null && automaton instanceof FASimple){
                             put(MIMETypes.HTML,automaton.toSVG());
-                        }
-                        else {
-                            FASimple previous = (FASimple) automaton.previous;
-                            String HTML =
-                                    "<table border=\"1\" cellspacing=\"0\" bordercolor=\"#000000\"  style=\"border-collapse:collapse;\">\n" +
-                                    "  <tr>\n" +
-                                    "    <th> Previous Hypothesis</th>\n" +
-                                    "    <th> Current Hypothesis </th>\n" +
-                                    "  </tr>\n" +
-                                    "  <tr>\n" +
-                                    "    <td>%s</td>\n" +
-                                    "    <td>%s</td>\n" +
-                                    "  </tr>\n" +
-                                    "</table>";
-                            put(MIMETypes.HTML,String.format(HTML,previous.toSVG(),automaton.toSVG()));
-                        }
+//                        }
+//                        else {
+//                            FASimple previous = (FASimple) automaton.previous;
+//                            String HTML =
+//                                    "<table border=\"1\" cellspacing=\"0\" bordercolor=\"#000000\"  style=\"border-collapse:collapse;\">\n" +
+//                                    "  <tr>\n" +
+//                                    "    <th> Previous Hypothesis</th>\n" +
+//                                    "    <th> Current Hypothesis </th>\n" +
+//                                    "  </tr>\n" +
+//                                    "  <tr>\n" +
+//                                    "    <td>%s</td>\n" +
+//                                    "    <td>%s</td>\n" +
+//                                    "  </tr>\n" +
+//                                    "</table>";
+//                            put(MIMETypes.HTML,String.format(HTML,previous.toSVG(),automaton.toSVG()));
+//                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -62,7 +62,10 @@ public abstract class LearnerDFA extends LearnerBase<DFA> {
 
     @Override
     public DFA getHypothesis() {
-        dfa.colored = ImmutableList.of(stateToSplit,stateToAdd);
+//        dfa.colored = ImmutableList.of(stateToSplit,stateToAdd);
+        dfa.stateToSplit = this.stateToSplit;
+        dfa.stateToAdd   = this.stateToAdd;
+
         return dfa;
     }
     
