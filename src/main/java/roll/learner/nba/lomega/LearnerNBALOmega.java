@@ -63,7 +63,7 @@ public class LearnerNBALOmega extends LearnerBase<NBA>{
         constructHypothesis();
     }
 
-    protected void constructHypothesis() {
+    protected void  constructHypothesis() {
         // construct BA from FDFA
         FDFA fdfa = fdfaLearner.getHypothesis();
         nba = UtilLOmega.constructNBA(options, fdfa);

@@ -52,9 +52,9 @@ public abstract class LearnerBase<M> implements Learner<M, HashableValue> {
         this.membershipOracle = membershipOracle;
     }
     
-    protected int stateToSplit;   // state we are going to split
-    protected int stateToAdd;     // new state 
-    public M oldHyp;
+    protected int stateToSplit = -1;   // state we are going to split
+    protected int stateToAdd   = -1;     // new state
+//    public M oldHyp;
     @Override
     public Options getOptions() {
         return options;
