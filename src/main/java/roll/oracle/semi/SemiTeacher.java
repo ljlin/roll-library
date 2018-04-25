@@ -11,7 +11,7 @@ import java.util.function.Function;
 public class SemiTeacher implements MembershipOracle<HashableValue> {
     private Function<Query<HashableValue>,Boolean>  delegate;
 
-    public SemiTeacher(BiFunction<String,String,Boolean> f) {
+    public SemiTeacher(BiFunction<String, String, Boolean> f) {
         this.delegate = (query -> f.apply(
                 query.getPrefix().toStringWithAlphabet(),
                 query.getSuffix().toStringWithAlphabet()

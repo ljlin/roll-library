@@ -212,7 +212,7 @@ public abstract class LearnerFDFA extends LearnerBase<FDFA> {
 ////                          .peek(s -> System.out.println(s))
 //                            .reduce("",(u,v)-> u +" <p> Progress Learner for xxx : <br> "+ v + "<br>");
         else
-            return "";
+            return toString();
     }
     // -------------- some helper function
     // for FDFA learning, this function should not be visible

@@ -86,7 +86,7 @@ public abstract class LearnerBase<M> implements Learner<M, HashableValue> {
             public Map<String, String> display(LearnerBase leaner) {
                 return new HashMap<String, String>() {{
                         if (leaner.options.structure == Options.Structure.TREE)
-                            put(MIMETypes.HTML,leaner.toSVG());
+                            put(MIMETypes.HTML, leaner.toSVG());
                         else
                             put(MIMETypes.TEXT,leaner.toString());
                 }};

@@ -82,17 +82,57 @@ public class ROLLNotebook {
             }
         });
         // for Learners
-        Displayers.register(LearnerBase.class, new Displayer<LearnerBase>() {
+//        Displayers.register(JupyterLearner.class, new Displayer<JupyterLearner>() {
+//            @Override
+//            public Map<String, String> display(JupyterLearner learner) {
+//                return new HashMap<String, String>() {
+//                    private static final long serialVersionUID = 1L;
+//
+//                    {
+//                        if (! learner.isTable()){
+//                            System.err.println("toString() \n" + learner.toString());
+//                            put(MIMETypes.HTML, dotToSVG(learner.toString()));
+//                        }
+//                        else {
+//                            put(MIMETypes.TEXT, learner.toString());
+//                        }
+//                    }
+//                };
+//            }
+//        });
+        
+        Displayers.register(DFALearner.class, new Displayer<DFALearner>() {
             @Override
-            public Map<String, String> display(LearnerBase learner) {
+            public Map<String, String> display(DFALearner learner) {
                 return new HashMap<String, String>() {
                     private static final long serialVersionUID = 1L;
 
                     {
-                        if (learner.getOptions().structure == Options.Structure.TREE)
+                        if (! learner.isTable()){
+                            System.err.println("toString() \n" + learner.toString());
                             put(MIMETypes.HTML, dotToSVG(learner.toString()));
-                        else
+                        }
+                        else {
                             put(MIMETypes.TEXT, learner.toString());
+                        }
+                    }
+                };
+            }
+        });
+        
+        Displayers.register(NBALearner.class, new Displayer<NBALearner>() {
+            @Override
+            public Map<String, String> display(NBALearner learner) {
+                return new HashMap<String, String>() {
+                    private static final long serialVersionUID = 1L;
+
+                    {
+                        if (learner.isTable()){
+                            put(MIMETypes.TEXT, learner.toString());
+                        }
+                        else {
+                            put(MIMETypes.HTML, learner.toString());
+                        }
                     }
                 };
             }
@@ -280,93 +320,33 @@ public class ROLLNotebook {
         return learner;
     }
     // ==============================================================================================================
-    // for interactive learning
-    private static LearnerBase<? extends FASimple> learner;
-    private static MQOracle mqOracle;
     
     // create NBA learner
-    public static void createNBALearner(String algo, String structure, BiFunction<String, String, Boolean> mqFunc) {
+    public static NBALearner createNBALearner(String algo, String structure, BiFunction<String, String, Boolean> mqFunc) {
         Options options = parseOptions(algo, structure);
         if(options.automaton != Options.TargetAutomaton.NBA) {
             throw new UnsupportedOperationException("Unsupported BA learner");
         }
         verifyAlphabet();
-        mqOracle = new MQOracle(mqFunc);
-        learner = getLearner(options, alphabet, mqOracle);
+        MembershipOracle<HashableValue> mqOracle = new MQOracle(mqFunc);
+        @SuppressWarnings("unchecked")
+        LearnerBase<NBA> learner = (LearnerBase<NBA>) getLearner(options, alphabet, mqOracle);
         learner.startLearning();
-    }
-    
-    private static void verifyLearner() {
-        if(learner == null) throw new UnsupportedOperationException("Please first create a learner via createNBALeaner or createDFALeaner");
-    }
-    
-    public static FASimple getHypothesis() {
-        verifyLearner();
-        return learner.getHypothesis();
+        return new NBALearner(alphabet, learner, mqOracle);
     }
     
     // create DFA learner
-    public static void createDFALearner(String algo, String structure, Function<String, Boolean> mqFunc) {
+    public static DFALearner createDFALearner(String algo, String structure, Function<String, Boolean> mqFunc) {
         Options options = parseOptions(algo, structure);
         if(options.automaton != Options.TargetAutomaton.DFA) {
             throw new UnsupportedOperationException("Unsupported DFA learner");
         }
         verifyAlphabet();
-        mqOracle = new MQOracle(mqFunc);
-        learner = getLearner(options, alphabet,  mqOracle);
+        MembershipOracle<HashableValue> mqOracle = new MQOracle(mqFunc);
+        @SuppressWarnings("unchecked")
+        LearnerBase<DFA> learner = (LearnerBase<DFA>) getLearner(options, alphabet, mqOracle);
         learner.startLearning();
-    }
-    
-    public static void refineDFAHypothesis(String counterexample) {
-        verifyAlphabet();
-        Word word = alphabet.getWordFromString(counterexample);
-        verifyLearner();
-        // now verify counterexample
-        DFA hypothesis = (DFA) learner.getHypothesis();
-        boolean isInHypo = hypothesis.getAcc().isAccepting(word, alphabet.getEmptyWord());
-        Query<HashableValue> ceQuery = new QuerySimple<>(word);
-        HashableValue isInTarget = mqOracle.answerMembershipQuery(ceQuery);
-        if(isInHypo && isInTarget.isAccepting()) {
-            System.err.println("Invalid counterexample, both in hypothesis and target");
-            return ;
-        }
-        
-        if(!isInHypo && !isInTarget.isAccepting()) {
-            System.err.println("Invalid counterexample, neither in hypothesis or target");
-            return ;
-        }
-        ceQuery.answerQuery(null);
-        learner.refineHypothesis(ceQuery);
-    }
-    
-    public static void refineNBAHypothesis(String stem, String loop) {
-        verifyAlphabet();
-        Word prefix = alphabet.getWordFromString(stem);
-        Word suffix = alphabet.getWordFromString(loop);
-        verifyLearner();
-        // now verify counterexample
-        NBA hypothesis = (NBA) learner.getHypothesis();
-        boolean isInHypo = hypothesis.getAcc().isAccepting(prefix, suffix);
-        Query<HashableValue> ceQuery = new QuerySimple<>(prefix, suffix);
-        HashableValue isInTarget = mqOracle.answerMembershipQuery(ceQuery);
-//        if(isInHypo && isInTarget.isAccepting()) {
-//            throw new UnsupportedOperationException("Invalid counterexample, both in hypothesis and target");
-//        }
-//        
-//        if(!isInHypo && !isInTarget.isAccepting()) {
-//            throw new UnsupportedOperationException("Invalid counterexample, neither in hypothesis or target");
-//        }
-        if(isInHypo && isInTarget.isAccepting()) {
-            System.err.println("Invalid counterexample, both in hypothesis and target");
-            return ;
-        }
-        
-        if(!isInHypo && !isInTarget.isAccepting()) {
-            System.err.println("Invalid counterexample, neither in hypothesis or target");
-            return ;
-        }
-        ceQuery.answerQuery(null);
-        learner.refineHypothesis(ceQuery);
+        return new DFALearner(alphabet, learner, mqOracle);
     }
     
     private static class MQOracle implements MembershipOracle<HashableValue> {
@@ -386,7 +366,6 @@ public class ROLLNotebook {
                 )
             );
         }
-
 
         @Override
         public HashableValue answerMembershipQuery(Query<HashableValue> query) {

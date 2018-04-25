@@ -36,9 +36,9 @@ import roll.words.Alphabet;
  * @author Yong Li (liyong@ios.ac.cn)
  * */
 public abstract class FASimple implements FA {
-    static {
-        FASimple.register();
-    }
+//    static {
+//        FASimple.register();
+//    }
 
     protected final ArrayList<StateFA> states;
     protected final Alphabet alphabet;
@@ -194,35 +194,35 @@ public abstract class FASimple implements FA {
     public String toSVG() throws IOException {
         return NativeTool.Dot2SVG(this.toDot());
     }
-    static void register(){
-        Displayers.register(FASimple.class, new Displayer<FASimple>() {
-            @Override
-            public Map<String, String> display(FASimple automaton) {
-                return new HashMap<String, String>() {{
-                    try {
-                        if (automaton.previous == null && automaton instanceof FASimple){
-                            put(MIMETypes.HTML,automaton.toSVG());
-                        }
-                        else {
-                            FASimple previous = (FASimple) automaton.previous;
-                            String HTML =
-                                    "<table border=\"1\" cellspacing=\"0\" bordercolor=\"#000000\"  style=\"border-collapse:collapse;\">\n" +
-                                    "  <tr>\n" +
-                                    "    <th> Previous Hypothesis</th>\n" +
-                                    "    <th> Current Hypothesis </th>\n" +
-                                    "  </tr>\n" +
-                                    "  <tr>\n" +
-                                    "    <td>%s</td>\n" +
-                                    "    <td>%s</td>\n" +
-                                    "  </tr>\n" +
-                                    "</table>";
-                            put(MIMETypes.HTML,String.format(HTML,previous.toSVG(),automaton.toSVG()));
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }};
-            }
-        });
-    }
+//    static void register(){
+//        Displayers.register(FASimple.class, new Displayer<FASimple>() {
+//            @Override
+//            public Map<String, String> display(FASimple automaton) {
+//                return new HashMap<String, String>() {{
+//                    try {
+//                        if (automaton.previous == null && automaton instanceof FASimple){
+//                            put(MIMETypes.HTML,automaton.toSVG());
+//                        }
+//                        else {
+//                            FASimple previous = (FASimple) automaton.previous;
+//                            String HTML =
+//                                    "<table border=\"1\" cellspacing=\"0\" bordercolor=\"#000000\"  style=\"border-collapse:collapse;\">\n" +
+//                                    "  <tr>\n" +
+//                                    "    <th> Previous Hypothesis</th>\n" +
+//                                    "    <th> Current Hypothesis </th>\n" +
+//                                    "  </tr>\n" +
+//                                    "  <tr>\n" +
+//                                    "    <td>%s</td>\n" +
+//                                    "    <td>%s</td>\n" +
+//                                    "  </tr>\n" +
+//                                    "</table>";
+//                            put(MIMETypes.HTML,String.format(HTML,previous.toSVG(),automaton.toSVG()));
+//                        }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }};
+//            }
+//        });
+//    }
 }
