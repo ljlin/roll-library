@@ -199,6 +199,56 @@ public final class ROLL {
         options.stats.print();
         
     }
+    
+    public static NBA complement(Options options, NBA input) {
+        // starting to complement
+        options.stats.numOfLetters = input.getAlphabetSize();
+        options.stats.numOfStatesInTraget = input.getStateSize();
+        
+        TeacherNBAComplement teacher = new TeacherNBAComplement(options, input);
+        LearnerFDFA learner = UtilLOmega.getLearnerFDFA(options, input.getAlphabet(), teacher);
+        options.log.println("Initializing learner...");
+        Timer timer = new Timer();
+        long t = timer.getCurrentTime();
+        learner.startLearning();
+        t = timer.getCurrentTime() - t;
+        options.stats.timeOfLearner += t;
+        FDFA hypothesis = null;
+        while(true) {
+            options.log.verbose("Table/Tree is both closed and consistent\n" + learner.toString());
+            hypothesis = learner.getHypothesis();
+            // along with ce
+            options.log.println("Resolving equivalence query for hypothesis...  ");
+            Query<HashableValue> ceQuery = teacher.answerEquivalenceQuery(hypothesis);
+            boolean isEq = ceQuery.getQueryAnswer().getLeft();
+            if(isEq) {
+                // store statistics
+                options.stats.numOfStatesInLeading = hypothesis.getLeadingDFA().getStateSize();
+                for(int state = 0; state < hypothesis.getLeadingDFA().getStateSize(); state ++) {
+                    options.stats.numOfStatesInProgress.add(hypothesis.getProgressDFA(state).getStateSize());
+                }
+                break;
+            }
+            // counterexample analysis
+            ceQuery.answerQuery(new HashableValueBoolean(ceQuery.getQueryAnswer().getRight()));
+            TranslatorFDFA translator = new TranslatorFDFAUnder(learner);
+            translator.setQuery(ceQuery);
+            while(translator.canRefine()) {
+                ceQuery = translator.translate();
+                options.log.verbose("Counterexample is: " + ceQuery.toString());
+                t = timer.getCurrentTime();
+                options.log.println("Refining current hypothesis...");
+                learner.refineHypothesis(ceQuery);
+                t = timer.getCurrentTime() - t;
+                options.stats.timeOfLearner += t;
+                if(options.optimization != Options.Optimization.LAZY_EQ) break;
+            }            
+        }
+        options.log.println("Learning completed...");
+        
+        teacher.print();
+        return options.stats.hypothesis;
+    }
 
     public static void runComplementingMode(Options options) {
         

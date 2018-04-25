@@ -40,6 +40,7 @@ import roll.learner.dfa.tree.LearnerDFATreeKV;
 import roll.learner.nba.ldollar.LearnerNBALDollar;
 import roll.learner.nba.lomega.LearnerNBALOmega;
 import roll.main.Options;
+import roll.main.ROLL;
 import roll.oracle.MembershipOracle;
 import roll.oracle.TeacherAbstract;
 import roll.oracle.dfa.TeacherDFA;
@@ -320,7 +321,7 @@ public class ROLLNotebook {
         return learner;
     }
     // ==============================================================================================================
-    
+    // interactive learning
     // create NBA learner
     public static NBALearner createNBALearner(String algo, String structure, BiFunction<String, String, Boolean> mqFunc) {
         Options options = parseOptions(algo, structure);
@@ -374,6 +375,21 @@ public class ROLLNotebook {
 
 
     }
-
+    
+    // ==============================================================================================================
+    // complement Buchi automaton
+    public static NBA complement(String algo, String structure, NBA nba) {
+        Options options = parseOptions(algo, structure);
+        if(options.automaton != Options.TargetAutomaton.NBA) {
+            throw new UnsupportedOperationException("Unsupported BA learner");
+        }
+        if(options.algorithm != Options.Algorithm.PERIODIC
+        && options.algorithm != Options.Algorithm.RECURRENT
+        && options.algorithm != Options.Algorithm.SYNTACTIC) {
+            throw new UnsupportedOperationException("Unsupported BA learner");
+        }
+        
+        return ROLL.complement(options, nba);
+    }
    
 }
